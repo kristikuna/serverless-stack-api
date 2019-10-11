@@ -1,6 +1,5 @@
 service: notes-app-api
 
-# Create an optimized package for our functions 
 package:
   individually: true
 
@@ -15,13 +14,8 @@ provider:
   stage: prod
   region: us-east-1
 
-# To load environment variables externally
-# rename env.example to .env and uncomment
-# the following line. 
-#
-environment:
-  tableName: notes
-#  sampleEnvVar: ${env:SAMPLE_ENV_VAR}
+  environment:
+    tableName: notes
 
 iamRoleStatements: 
   - Effect: Allow
@@ -33,16 +27,23 @@ iamRoleStatements:
       - dynamodb:PutItem
       - dynamodb:UpdateItem
       - dynamodb:DeleteItem
-
-Resource: "arn:aws:dynamodb:us-east-1:*:*"
+    Resource: "arn:aws:dynamodb:us-east-1:*:*"
 
 functions:
   create:
     handler: create.main
     events:
       - http:
-          path: notes
-          method: post
+        path: notes
+        method: post
+        cors: true
+        authorizer: aws_iam
+
+  get: 
+    handler: get.main
+    events: 
+      - http: 
+          path: notes/{id}
+          method: get
           cors: true
           authorizer: aws_iam
-
