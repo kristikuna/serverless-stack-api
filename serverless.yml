@@ -16,6 +16,7 @@ provider:
 
   environment:
     tableName: notes
+    stripeSecretKey: ${env:STRIPE_SECRET_KEY}
 
 iamRoleStatements: 
   - Effect: Allow
@@ -34,10 +35,10 @@ functions:
     handler: create.main
     events:
       - http:
-        path: notes
-        method: post
-        cors: true
-        authorizer: aws_iam
+          path: notes
+          method: post
+          cors: true
+          authorizer: aws_iam
 
   get: 
     handler: get.main
@@ -47,3 +48,43 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+
+  list: 
+    handler: list.main
+    events: 
+      - http: 
+          path: notes
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  update: 
+    handler: update.main
+    events: 
+      - http: 
+          path: notes/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  
+  delete: 
+    handler: delete.main
+    events: 
+      - http: 
+          path: notes/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+
+  billing: 
+    handler: billing.main
+    events: 
+      - http: 
+          path: billing
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+resources: 
+  - ${file(resources/api-gateway-errors.yml)}
+  
